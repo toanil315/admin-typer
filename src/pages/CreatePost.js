@@ -40,7 +40,7 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="py-6">
+    <div>
       <form className="max-w-4xl mx-auto p-6 bg-white border border-gray-300 rounded-md shadow-md">
         <h2 className="text-2xl text-gray-700 font-bold mb-4 tracking-wide">
           Blog Post Submission Form

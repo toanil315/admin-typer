@@ -7,14 +7,12 @@ function AdminLayout({children, namePage}) {
         //Call API get User Info...
     }, [])
 
-    console.log("render admin layout")
-
   return (
     <main className='flex'>
         <section className='w-1/5'>
             <SideBar />
         </section>
-        <section className='flex-grow'>
+        <section className='min-h-screen flex-grow' style={{backgroundColor: "#EDF1F5"}}>
             <div style={{backgroundColor: "#20222A"}} className="w-full flex items-center justify-between px-4 py-2">
                 <h3 className='font-semibold text-xl text-white'>{namePage}</h3>
                 <div className='flex items-center'>
@@ -22,7 +20,7 @@ function AdminLayout({children, namePage}) {
                     <span className='font-semibold text-white'>Steve</span>
                 </div>
             </div>
-            <div style={{backgroundColor: "#EDF1F5"}}>
+            <div className="py-6">
                 {children}
             </div>
         </section>
