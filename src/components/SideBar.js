@@ -2,7 +2,7 @@ import React, { Fragment, memo, useEffect, useRef, useState } from "react";
 import { HomeIcon } from "@heroicons/react/outline";
 import { PlusIcon } from "@heroicons/react/solid";
 import logo from "../assets/img//typer-logo.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import MenuItem from "./MenuItem";
 
 const menuItemList = [
@@ -19,7 +19,8 @@ const menuItemList = [
 ];
 
 function SideBar(props) {
-  const [positionActive, setPositionActive] = useState(0);
+  const {pathname} = useLocation();
+  const [positionActive, setPositionActive] = useState(menuItemList.findIndex(item => item.pathName === pathname));
 
   return (
     <div className="fixed z-50 top-0 w-1/5 min-h-full border-r border-gray-300 shadow-md py-2">

@@ -1,6 +1,9 @@
-import React, { useMemo } from "react";
-import { Table, Tag, Space } from "antd";
+import React, { } from "react";
+import { Table } from "antd";
 import { TrashIcon, EyeIcon, PencilIcon } from "@heroicons/react/outline";
+import DrawerAntd from "../components/DrawerAntd";
+import { useDispatch } from "react-redux";
+import { SHOW_DRAWER } from "../redux/types/DrawerType";
 
 const fakeData = [
   {
@@ -76,6 +79,7 @@ const styleTag = {
 }
 
 export default function Home() {
+  const dispatch = useDispatch()
   const columns = [
     {
       title: 'Name',
@@ -118,8 +122,8 @@ export default function Home() {
       width: "15%",
       render: (text) => (
         <div className="flex justify-between">
-          <button title="View" className="p-2 bg-green-500 text-white rounded-md transition duration-200 ease-in hover:bg-green-600"><EyeIcon className="h-5" /></button>
-          <button title="Update" className="p-2 bg-blue-500 text-white rounded-md transition duration-200 ease-in hover:bg-blue-600"><PencilIcon className="h-5" /></button>
+          <button onClick={() => {}} title="View" className="p-2 bg-green-500 text-white rounded-md transition duration-200 ease-in hover:bg-green-600"><EyeIcon className="h-5" /></button>
+          <button onClick={() => {dispatch({type: SHOW_DRAWER})}} title="Update" className="p-2 bg-blue-500 text-white rounded-md transition duration-200 ease-in hover:bg-blue-600"><PencilIcon className="h-5" /></button>
           <button title="Delete" className="p-2 bg-red-500 text-white rounded-md transition duration-200 ease-in hover:bg-red-600"><TrashIcon className="h-5" /></button>
         </div>
       )
@@ -128,6 +132,7 @@ export default function Home() {
 
   return (
     <main className="w-[97%] mx-auto bg-white">
+      <DrawerAntd />
       <Table rowKey={record => record.id} columns={columns} dataSource={fakeData} pagination={{position: ["bottomCenter"]}} />
     </main>
   );
