@@ -1,0 +1,3 @@
+export const SHOW_PREVIEW = "SHOW_PREVIEW";
+export const HIDE_PREVIEW = "HIDE_PREVIEW";
+export const CHANGE_PREVIEW_POST = "CHANGE_PREVIEW_POST"

@@ -23,7 +23,7 @@ function SideBar(props) {
   const [positionActive, setPositionActive] = useState(menuItemList.findIndex(item => item.pathName === pathname));
 
   return (
-    <div className="fixed z-50 top-0 w-1/5 min-h-full border-r border-gray-300 shadow-md py-2">
+    <div className="fixed z-30 top-0 w-1/5 min-h-full border-r border-gray-300 shadow-md py-2">
       <Link to="/">
         <div className="p-4 border-b-4 border-gray-50 shadow-sm mb-3">
           <img className="h-11" src={logo} alt="logo" />
