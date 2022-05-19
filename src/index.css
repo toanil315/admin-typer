@@ -11,23 +11,23 @@
     @apply text-gray-500 font-semibold text-lg leading-relaxed
   }
 
-  .post-content > p {
+  .post-content p {
       @apply text-gray-500 font-semibold text-lg leading-relaxed
   }
 
-  .post-content > h2 {
+  .post-content h1 {
       @apply text-gray-800 font-semibold text-4xl
   }
 
-  .post-content > h2 {
+  .post-content h2 {
       @apply text-gray-800 font-semibold text-3xl
   }
 
-  .post-content > h3 {
+  .post-content h3 {
       @apply text-gray-800 font-semibold text-2xl
   }
 
-  .post-content > h4 {
+  .post-content h4 {
       @apply text-gray-800 font-semibold text-xl
   }
 }

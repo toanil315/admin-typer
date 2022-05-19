@@ -16,6 +16,11 @@ const menuItemList = [
     title: "Create Post",
     pathName: "/createpost",
   },
+  {
+    MenuIcon: PlusIcon,
+    title: "Create Post Ver 2",
+    pathName: "/createpostv2",
+  },
 ];
 
 function SideBar(props) {
