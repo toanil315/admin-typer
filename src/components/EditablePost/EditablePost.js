@@ -10,8 +10,17 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
     content: "",
     image: "",
   });
-
   const [isEditting, setIsEditting] = useState(true);
+
+  useEffect(() => {
+    setEditableContent({
+      title: item.title,
+      content: item.content,
+      image: item.image,
+    })
+  }, [])
+
+  
 
   const fileUploadRef = useRef(null);
   const handleFileUpload = async (files) => {
@@ -19,14 +28,12 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
       const data = await uploadImageService.upload(files);
       setEditableContent({
         ...editableContent,
-        image: `<p><img className="block w-1/2 object-cover mx-auto" src=${data.secure_url} alt=${data.secure_url} /></p>`,
+        image: `<p><img className="block w-4/6 object-cover mx-auto" src=${data.secure_url} alt=${data.secure_url} /></p>`,
       });
     } catch (error) {
       console.log("error", { ...error });
     }
   };
-
-  console.log();
 
   const itemContent = `<h2>${editableContent["title"]}</h2> <p>${editableContent["content"]}</p> ${editableContent["image"]}`;
 
@@ -44,8 +51,7 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
             />
             <PlusCircleIcon
               onClick={() => {
-                insertBodyContent();
-                setIsEditting(false);
+                insertBodyContent()
               }}
               className="h-10 w-10 mt-2 text-gray-300 hover:text-red-500 transition duration-150 ease-out cursor-pointer"
             />
@@ -82,7 +88,7 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
             </div>
             <div>
               {!!editableContent.image ? (
-                parse(editableContent.image)
+                <div className="mt-3">{parse(editableContent.image)}</div>
               ) : (
                 <>
                   <input

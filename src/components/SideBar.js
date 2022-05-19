@@ -18,8 +18,8 @@ const menuItemList = [
   },
   {
     MenuIcon: PlusIcon,
-    title: "Create Post Ver 2",
-    pathName: "/createpostv2",
+    title: "Publish",
+    pathName: "/publish",
   },
 ];
 

@@ -15,7 +15,10 @@ function App() {
       <Routes>
         <Route path="/" element={<AdminLayout namePage={"Posts"}><Home /></AdminLayout>} />
         <Route path="/createpost" element={<AdminLayout namePage={"Create Post"}><CreatePost /></AdminLayout>} />
-        <Route path="/createpostv2" element={<AdminLayout namePage={"Create Post Version 2"}><CreatePostVer2 /></AdminLayout>} />
+        <Route path="/publish" element={<AdminLayout namePage={"Publish Post"} />}>
+          <Route index element={<CreatePostVer2 />} />
+          <Route path='/publish/:id' element={<CreatePostVer2 />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

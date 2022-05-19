@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { Outlet } from 'react-router-dom';
 import SideBar from '../components/SideBar'
 
 function AdminLayout({children, namePage}) {
@@ -22,6 +23,7 @@ function AdminLayout({children, namePage}) {
             </div>
             <div className="py-6">
                 {children}
+                <Outlet />
             </div>
         </section>
     </main>

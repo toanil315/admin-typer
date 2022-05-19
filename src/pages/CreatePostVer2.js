@@ -1,10 +1,28 @@
 import React, { useRef, useState } from "react";
-import { BookmarkIcon, UploadIcon, PlusCircleIcon } from "@heroicons/react/outline";
-import axios from "axios";
+import { BookmarkIcon, UploadIcon } from "@heroicons/react/outline";
 import EditablePost from "../components/EditablePost/EditablePost";
 import { uploadImageService } from "../services/UploadImageServices";
+import { Select } from "antd";
 
 export default function CreatePostVer2() {
+  const categories = [
+    {
+      id: 1,
+      categoryName: "WORLDWIDE",
+    },
+    {
+      id: 2,
+      categoryName: "GALLERY",
+    },
+    {
+      id: 3,
+      categoryName: "TECHNOLOGY",
+    },
+    {
+      id: 4,
+      categoryName: "LIFE",
+    },
+  ];
   const [post, setPost] = useState({
     name: "",
     description: "",
@@ -15,30 +33,19 @@ export default function CreatePostVer2() {
       avatar:
         "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
     },
-    category: [
+    category: null,
+    body: [
       {
-        id: 1,
-        categoryName: "WORLDWIDE",
-      },
-      {
-        id: 2,
-        categoryName: "GALLERY",
+        id: Date.now(),
+        title: "",
+        content: "",
+        image: "",
       },
     ],
-    body: "",
     createdAt: "October 6, 2019",
   });
 
-  const [body, setBody] = useState([
-    {
-      id: Date.now(),
-      title: "",
-      content: "",
-      image: "",
-    }
-  ])
-
-  const handleChangeName = (e) => {
+  const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
@@ -46,50 +53,91 @@ export default function CreatePostVer2() {
 
   const handleFileUpload = async (files) => {
     try {
-      const data = await uploadImageService.upload(files)
-      setPost({...post, mainImg: data.secure_url})
-    }
-    catch(error) {
-      console.log("error: ", {...error})
+      const data = await uploadImageService.upload(files);
+      setPost({ ...post, mainImg: data.secure_url });
+    } catch (error) {
+      console.log("error: ", { ...error });
     }
   };
 
   const setBodyContent = (index) => {
     return (editableContent) => {
-      const bodyClone = [...body]
-      bodyClone[index] = {...bodyClone[index], ...editableContent}
-      setBody(bodyClone)
-    }
-  }
+      let bodyClone = [...post.body];
+      bodyClone[index] = { ...bodyClone[index], ...editableContent };
+      setPost({ ...post, body: bodyClone });
+    };
+  };
 
   const insertBodyContent = (currentIndex) => {
     return () => {
-      let bodyClone = [...body]
+      let bodyClone = [...post.body];
       bodyClone.splice(currentIndex + 1, 0, {
         id: Date.now(),
         title: "",
         content: "",
         image: "",
-      })
-      setBody(bodyClone);
-    }
-  }
+      });
+      setPost({ ...post, body: bodyClone });
+    };
+  };
+
+  const handleChangeCategory = (value) => {
+    const cate = categories.find((item) => item.id === value);
+    setPost({ ...post, category: cate });
+  };
 
   const handlePublish = () => {
-    
-  }
+    // handle content
+    const postClone = {...post}
+    postClone.body = postClone.body.map((bodyItem, index) => {
+      return {
+        ...bodyItem,
+        title: `<h2>${bodyItem.title}</h2>`,
+        content: `<p>${bodyItem.content}</p>`,
+      }
+    })
+    //submit
+    console.log(postClone);
+  };
+
+  console.log(post)
 
   return (
     <div>
-      <main className="relative z-50 py-10 mx-auto w-[950px] h-full bg-white rounded-xl overflow-y-scroll">
+      <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl">
+        <h4>Description:</h4>
+        <textarea
+          onChange={handleChange}
+          name="description"
+          value={post.description}
+          className="focus:outline-none border-0 w-full text-gray-500 font-semibold text-lg leading-relaxed resize-none"
+          placeholder="Type something..."
+          rows={4}
+        />
+      </div>
+      <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl">
+        <h4 className="mb-2">Categories:</h4>
+        <Select
+          placeholder="Please select"
+          size="large"
+          onChange={handleChangeCategory}
+          style={{ width: "100%" }}
+          options={categories.map((cate, index) => ({ label: cate.categoryName, value: cate.id }))}
+        ></Select>
+      </div>
+      <main className="py-6 mx-auto w-[950px] h-full bg-white rounded-xl">
         <section className="max-w-7xl mx-auto p-4 pb-0">
-          <div className="flex gap-x-6 mb-4">
-            <span className="text-sm font-bold text-red-500 px-4 py-1 border-2 border-red-500 rounded-full cursor-pointer ">
-              GALLERY
-            </span>
+          <div className="mb-4">
+            {!!post.category ? (
+              <span className="text-sm font-bold text-red-500 px-4 py-1 border-2 border-red-500 rounded-full cursor-pointer ">
+                {post.category.categoryName}
+              </span>
+            ) : (
+              ""
+            )}
           </div>
           <input
-            onChange={handleChangeName}
+            onChange={handleChange}
             name="name"
             value={post.name}
             className="text-4xl w-full font-bold tracking-wider leading-snug mb-6 placeholder-gray-700 focus:border-0 focus:outline-none"
@@ -135,27 +183,46 @@ export default function CreatePostVer2() {
                 alt="banner"
               />
             ) : (
-              <div onClick={() => {fileUploadRef.current.click();}} className="w-48 mx-auto py-3 rounded text-white text-md bg-red-500 flex justify-center cursor-pointer">
+              <div
+                onClick={() => {
+                  fileUploadRef.current.click();
+                }}
+                className="w-48 mx-auto py-3 rounded text-white text-md bg-red-500 flex justify-center cursor-pointer"
+              >
                 <UploadIcon className="h-6 pr-2" /> Upload banner
               </div>
             )}
           </div>
           <div className="mt-4 flex flex-col post-content">
-              {
-                body.map((bodyItem, index) => {
-                  return <EditablePost item={bodyItem} key={bodyItem.id} setBodyContent={setBodyContent(index)} insertBodyContent={insertBodyContent(index)} />
-                })
-              }
+            {post.body.map((bodyItem, index) => {
+              return (
+                <EditablePost
+                  item={bodyItem}
+                  key={bodyItem.id}
+                  setBodyContent={setBodyContent(index)}
+                  insertBodyContent={insertBodyContent(index)}
+                />
+              );
+            })}
           </div>
           <div className="flex gap-x-4 mt-10">
-            <p className="px-5 py-1 rounded-sm bg-red-500 text-white font-bold text-sm border-2 border-red-500 cursor-default hover:bg-white hover:text-red-500 transition duration-150 ease-out">
-              Gallery
-            </p>
+            {!!post.category ? (
+              <p className="px-5 py-1 rounded-sm bg-red-500 text-white font-bold text-sm border-2 border-red-500 cursor-default hover:bg-white hover:text-red-500 transition duration-150 ease-out">
+                {post.category.categoryName}
+              </p>
+            ) : (
+              ""
+            )}
           </div>
         </section>
-
-        <button onClick={handlePublish} className="block mx-auto mt-12 w-44 h-10 rounded text-white text-lg font-semibold bg-red-500 hover:bg-red-700 cursor-pointer">Publish</button>
       </main>
+
+      <button
+        onClick={handlePublish}
+        className="block mx-auto mt-12 w-44 h-10 rounded text-white text-lg font-semibold bg-red-500 hover:bg-red-700 cursor-pointer"
+      >
+        Publish
+      </button>
     </div>
   );
 }
