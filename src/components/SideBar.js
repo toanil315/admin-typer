@@ -25,7 +25,13 @@ const menuItemList = [
 
 function SideBar(props) {
   const {pathname} = useLocation();
-  const [positionActive, setPositionActive] = useState(menuItemList.findIndex(item => item.pathName === pathname));
+  const [positionActive, setPositionActive] = useState(0);
+
+  useEffect(() => {
+    const constuctorPathName = pathname.split("/")
+    let pathnamePrefix = "/" + constuctorPathName[1];
+    setPositionActive(menuItemList.findIndex(item => item.pathName === pathnamePrefix))
+  }, [pathname])
 
   return (
     <div className="fixed z-30 top-0 w-1/5 min-h-full border-r border-gray-300 shadow-md py-2">

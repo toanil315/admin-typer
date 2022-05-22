@@ -1,10 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BookmarkIcon, UploadIcon } from "@heroicons/react/outline";
 import EditablePost from "../components/EditablePost/EditablePost";
 import { uploadImageService } from "../services/UploadImageServices";
 import { Select } from "antd";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function CreatePostVer2() {
+  const {id} = useParams()
   const categories = [
     {
       id: 1,
@@ -44,6 +46,35 @@ export default function CreatePostVer2() {
     ],
     createdAt: "October 6, 2019",
   });
+
+  useEffect(() => {
+    if(id) {
+      setPost({
+        id: 1,
+        name: "Revealing a Deeper Nature in Illustrations",
+        description: "There exist many similar, albeit lesser known, forms of art. The artwork used in gallery, museum...",
+        mainImg: "https://cdn.seventhqueen.com/typer.sq/wp-content/uploads/sites/2/2019/08/22115903/illustration_hills_04.min_-700x700.jpg",
+        author: {
+          id: 1,
+          name: "Mangusta Rust",
+          avatar: "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
+        },
+        category: {
+          id: 1,
+          categoryName: "WORLDWIDE",
+        },
+        body: [
+          {
+            id: 123456,
+            title: "Test title",
+            content: "The best time with your friends is the weekdays! We’re celebrating our Bubble Time milestone of 5 years! We’re hosting a bubble-stamp party on Tuesday night featuring live entertainment, face painting, bubble balloons, bubble rings, and a giant Bubble Time teddy bear!",
+            image: "",
+          },
+        ],
+        createdAt: "October 6, 2019",
+      })
+    }
+  }, [])
 
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
@@ -96,15 +127,24 @@ export default function CreatePostVer2() {
         content: `<p>${bodyItem.content}</p>`,
       }
     })
+
+    //create at
+    const date = new Date();
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    let nameMonth = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const strDate = `${nameMonth} ${day}, ${year}`;
+    postClone.createdAt = strDate
+    
     //submit
     console.log(postClone);
   };
 
-  console.log(post)
 
   return (
     <div>
-      <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl">
+      <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl shadow-lg">
         <h4>Description:</h4>
         <textarea
           onChange={handleChange}
@@ -115,17 +155,18 @@ export default function CreatePostVer2() {
           rows={4}
         />
       </div>
-      <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl">
+      <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl shadow-lg">
         <h4 className="mb-2">Categories:</h4>
         <Select
-          placeholder="Please select"
+          value={post?.category?.id}
+          placeholder="Please select categories"
           size="large"
           onChange={handleChangeCategory}
           style={{ width: "100%" }}
           options={categories.map((cate, index) => ({ label: cate.categoryName, value: cate.id }))}
         ></Select>
       </div>
-      <main className="py-6 mx-auto w-[950px] h-full bg-white rounded-xl">
+      <main className="py-6 mx-auto w-[950px] h-full bg-white rounded-xl shadow-lg">
         <section className="max-w-7xl mx-auto p-4 pb-0">
           <div className="mb-4">
             {!!post.category ? (
@@ -140,7 +181,7 @@ export default function CreatePostVer2() {
             onChange={handleChange}
             name="name"
             value={post.name}
-            className="text-4xl w-full font-bold tracking-wider leading-snug mb-6 placeholder-gray-700 focus:border-0 focus:outline-none"
+            className="text-4xl w-full font-bold tracking-wider leading-snug mb-6 placeholder-gray-700 focus:border-0 focus:outline-none placeholder:text-gray-300"
             placeholder="Enter blog's name here"
             autoComplete="off"
           />

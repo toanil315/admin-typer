@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { SHOW_DRAWER } from "../redux/types/DrawerType";
 import Preview from "../components/Preview";
 import { CHANGE_PREVIEW_POST, SHOW_PREVIEW } from "../redux/types/PreviewType";
+import { Link } from "react-router-dom";
 
 const fakeData = [
   {
@@ -18,16 +19,10 @@ const fakeData = [
       name: "Mangusta Rust",
       avatar: "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
     },
-    category: [
-        {
-            id: 1,
-            categoryName: "WORLDWIDE",
-        },
-        {
-            id: 2,
-            categoryName: "GALLERY",
-        },
-    ],
+    category: {
+      id: 1,
+      categoryName: "WORLDWIDE",
+    },
     body: `
         <h2>Test title</h2>
         <p>The best time with your friends is the weekdays! We’re celebrating our Bubble Time milestone of 5 years! We’re hosting a bubble-stamp party on Tuesday night featuring live entertainment, face painting, bubble balloons, bubble rings, and a giant Bubble Time teddy bear!</p>
@@ -49,10 +44,10 @@ const fakeData = [
       name: "Mangusta Rust",
       avatar: "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
     },
-    category: [{
+    category: {
       id: 1,
       categoryName: "WORLDWIDE",
-    }],
+    },
     createdAt: "October 6, 2019",
   },
   {
@@ -65,10 +60,10 @@ const fakeData = [
       name: "Mangusta Rust",
       avatar: "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
     },
-    category: [{
+    category: {
       id: 3,
       categoryName: "TECH",
-    }],
+    },
     createdAt: "October 6, 2019",
   },
   {
@@ -81,10 +76,10 @@ const fakeData = [
       name: "Mangusta Rust",
       avatar: "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
     },
-    category: [{
+    category: {
       id: 2,
       categoryName: "GALLERY",
-    }],
+    },
     createdAt: "October 6, 2019",
   },
 ]
@@ -126,9 +121,7 @@ export default function Home() {
       key: 'category',
       width: "20%",
       render: (text) => (
-        text?.map((item, index) => {
-          return <span key={item.id} className={`px-2 py-1 mr-1 text-[0.7rem] border rounded-sm ${styleTag[item.id]}`}>{item.categoryName}</span>
-        })
+        <span key={text.id} className={`px-2 py-1 mr-1 text-[0.7rem] border rounded-sm ${styleTag[text.id]}`}>{text.categoryName}</span>
       )
     },
     {
@@ -147,7 +140,7 @@ export default function Home() {
           <button onClick={() => {
             handlePreivew(record)
           }} title="View" className="p-2 bg-green-500 text-white rounded-md transition duration-200 ease-in hover:bg-green-600"><EyeIcon className="h-5" /></button>
-          <button onClick={() => {dispatch({type: SHOW_DRAWER})}} title="Update" className="p-2 bg-blue-500 text-white rounded-md transition duration-200 ease-in hover:bg-blue-600"><PencilIcon className="h-5" /></button>
+          <Link to={`/publish/${record.id}`}><button title="Update" className="p-2 bg-blue-500 text-white rounded-md transition duration-200 ease-in hover:bg-blue-600"><PencilIcon className="h-5" /></button></Link>
           <button title="Delete" className="p-2 bg-red-500 text-white rounded-md transition duration-200 ease-in hover:bg-red-600"><TrashIcon className="h-5" /></button>
         </div>
       )
