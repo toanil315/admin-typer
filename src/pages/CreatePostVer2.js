@@ -3,78 +3,80 @@ import { BookmarkIcon, UploadIcon } from "@heroicons/react/outline";
 import EditablePost from "../components/EditablePost/EditablePost";
 import { uploadImageService } from "../services/UploadImageServices";
 import { Select } from "antd";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { addPost, fetchCategory, fetchPost, updatePost } from "../services/BaseServices";
+import { useDispatch, useSelector } from "react-redux";
+import { HIDE_LOADING, SHOW_LOADING } from "../redux/types/LoadingType";
 
 export default function CreatePostVer2() {
-  const {id} = useParams()
-  const categories = [
-    {
-      id: 1,
-      categoryName: "WORLDWIDE",
-    },
-    {
-      id: 2,
-      categoryName: "GALLERY",
-    },
-    {
-      id: 3,
-      categoryName: "TECHNOLOGY",
-    },
-    {
-      id: 4,
-      categoryName: "LIFE",
-    },
-  ];
+  const { id } = useParams()
+  const [categories, setCategory] = useState([])
+  const { userInfo } = useSelector(state => state.UserReducer)
+  const navigate = useNavigate()
+
   const [post, setPost] = useState({
     name: "",
     description: "",
     mainImg: null,
     author: {
-      id: 1,
-      name: "Mangusta Rust",
-      avatar:
-        "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
+      userId: "",
+      userName: "",
+      avatar: "",
     },
     category: null,
     body: [
       {
-        id: Date.now(),
-        title: "",
+        bodyId: Date.now().toString(),
+        tittleBody: "",
         content: "",
-        image: "",
+        imageBody: "",
       },
     ],
-    createdAt: "October 6, 2019",
+    createAt: "",
   });
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if(id) {
-      setPost({
-        id: 1,
-        name: "Revealing a Deeper Nature in Illustrations",
-        description: "There exist many similar, albeit lesser known, forms of art. The artwork used in gallery, museum...",
-        mainImg: "https://cdn.seventhqueen.com/typer.sq/wp-content/uploads/sites/2/2019/08/22115903/illustration_hills_04.min_-700x700.jpg",
-        author: {
-          id: 1,
-          name: "Mangusta Rust",
-          avatar: "https://typer.seventhqueen.com/publisher/wp-content/uploads/sites/2/front-user-profile/1571672984_mangusta.jpg",
-        },
-        category: {
-          id: 1,
-          categoryName: "WORLDWIDE",
-        },
-        body: [
-          {
-            id: 123456,
-            title: "Test title",
-            content: "The best time with your friends is the weekdays! We’re celebrating our Bubble Time milestone of 5 years! We’re hosting a bubble-stamp party on Tuesday night featuring live entertainment, face painting, bubble balloons, bubble rings, and a giant Bubble Time teddy bear!",
-            image: "",
-          },
-        ],
-        createdAt: "October 6, 2019",
-      })
+    const handleFetchCategory = async () => {
+      const data = await fetchCategory()
+      if (data) {
+        setCategory(data)
+      }
+    }
+
+    const handleFetchPost = async (id) => {
+      dispatch({ type: SHOW_LOADING })
+      const post = await fetchPost(id)
+      console.log("after fetch", post)
+      if (post) {
+        setPost(post)
+        setTimeout(() => {
+          dispatch({ type: HIDE_LOADING })
+        }, 400);
+      }
+    }
+
+    handleFetchCategory()
+
+    if (id) {
+      console.log("fetched post")
+      handleFetchPost(id)
     }
   }, [])
+
+  useEffect(() => {
+    if (userInfo.userId && !id) {
+      setPost(post => ({
+        ...post,
+        author: {
+          userId: userInfo?.userId,
+          userName: userInfo?.userName,
+          avatar: userInfo?.avatar,
+        },
+      }))
+    }
+  }, [userInfo.userId])
+
 
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
@@ -103,42 +105,65 @@ export default function CreatePostVer2() {
     return () => {
       let bodyClone = [...post.body];
       bodyClone.splice(currentIndex + 1, 0, {
-        id: Date.now(),
-        title: "",
+        bodyId: Date.now().toString(),
+        tittleBody: "",
         content: "",
-        image: "",
+        imageBody: "",
       });
       setPost({ ...post, body: bodyClone });
     };
   };
 
   const handleChangeCategory = (value) => {
-    const cate = categories.find((item) => item.id === value);
+    const cate = categories.find((item) => item.categoryId === value);
     setPost({ ...post, category: cate });
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     // handle content
-    const postClone = {...post}
+    let postClone = { ...post }
     postClone.body = postClone.body.map((bodyItem, index) => {
       return {
         ...bodyItem,
-        title: `<h2>${bodyItem.title}</h2>`,
+        tittleBody: `<h2>${bodyItem.tittleBody}</h2>`,
         content: `<p>${bodyItem.content}</p>`,
       }
     })
 
     //create at
     const date = new Date();
-    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let nameMonth = months[date.getMonth()];
     const day = date.getDate();
     const year = date.getFullYear();
     const strDate = `${nameMonth} ${day}, ${year}`;
-    postClone.createdAt = strDate
-    
+    postClone.createAt = strDate
+
     //submit
-    console.log(postClone);
+    let result = false
+    if (postClone.postId) {
+      postClone.body = postClone.body.map((bodyItem, index) => {
+        return {
+          ...bodyItem,
+          postId: postClone.postId
+        }
+      })
+      result = await updatePost(postClone)
+    }
+    else {
+      postClone = { ...postClone, categoryId: postClone.category.categoryId }
+      postClone = { ...postClone, userId: postClone.author.userId }
+
+      delete postClone.category
+      delete postClone.author
+
+      postClone.postId = Date.now().toString()
+      result = await addPost([postClone])
+    }
+
+    if (result) {
+      navigate("/")
+    }
   };
 
 
@@ -158,12 +183,12 @@ export default function CreatePostVer2() {
       <div className="py-6 mx-auto mb-4 p-4 w-[950px] h-full bg-white rounded-xl shadow-lg">
         <h4 className="mb-2">Categories:</h4>
         <Select
-          value={post?.category?.id}
+          value={post?.category?.categoryId}
           placeholder="Please select categories"
           size="large"
           onChange={handleChangeCategory}
           style={{ width: "100%" }}
-          options={categories.map((cate, index) => ({ label: cate.categoryName, value: cate.id }))}
+          options={categories.map((cate, index) => ({ label: cate.categoryName, value: cate.categoryId }))}
         ></Select>
       </div>
       <main className="py-6 mx-auto w-[950px] h-full bg-white rounded-xl shadow-lg">
@@ -198,10 +223,10 @@ export default function CreatePostVer2() {
                 <h4 className="font-semibold text-gray-800 cursor-default mb-1">
                   Written by{" "}
                   <span className="hover:text-red-500 transition duration-200 ease-out">
-                    Toanil
+                    {post.author?.userName}
                   </span>
                 </h4>
-                <p className="text-sm font-semibold text-gray-500">Posted on September 12, 2022</p>
+                {/* <p className="text-sm font-semibold text-gray-500">Posted on September 12, 2022</p> */}
               </div>
             </div>
             <BookmarkIcon className="h-7 hover:text-red-500 transition duration-200 ease-out cursor-pointer" />
@@ -239,7 +264,7 @@ export default function CreatePostVer2() {
               return (
                 <EditablePost
                   item={bodyItem}
-                  key={bodyItem.id}
+                  key={bodyItem.bodyId}
                   setBodyContent={setBodyContent(index)}
                   insertBodyContent={insertBodyContent(index)}
                 />

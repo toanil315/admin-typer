@@ -6,21 +6,19 @@ import parse from "html-react-parser";
 
 export default function EditablePost({ item, setBodyContent, insertBodyContent }) {
   const [editableContent, setEditableContent] = useState({
-    title: "",
+    tittleBody: "",
     content: "",
-    image: "",
+    imageBody: "",
   });
   const [isEditting, setIsEditting] = useState(true);
 
   useEffect(() => {
     setEditableContent({
-      title: item.title,
-      content: item.content,
-      image: item.image,
+      tittleBody: item.tittleBody.replace("<h2>", "").replace("</h2>", ""),
+      content: item.content.replace("<p>", "").replace("</p>", ""),
+      imageBody: item.imageBody,
     })
   }, [])
-
-  
 
   const fileUploadRef = useRef(null);
   const handleFileUpload = async (files) => {
@@ -28,14 +26,14 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
       const data = await uploadImageService.upload(files);
       setEditableContent({
         ...editableContent,
-        image: `<p><img className="block w-4/6 object-cover mx-auto" src=${data.secure_url} alt=${data.secure_url} /></p>`,
+        imageBody: `<p><img className="block w-4/6 object-cover mx-auto" src=${data.secure_url} alt=${data.secure_url} /></p>`,
       });
     } catch (error) {
       console.log("error", { ...error });
     }
   };
 
-  const itemContent = `<h2>${editableContent["title"]}</h2> <p>${editableContent["content"]}</p> ${editableContent["image"]}`;
+  const itemContent = `<h2>${editableContent["tittleBody"]}</h2> <p>${editableContent["content"]}</p> ${editableContent["imageBody"]}`;
 
   return (
     <>
@@ -55,14 +53,14 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
               }}
               className="h-10 w-10 mt-2 text-gray-300 hover:text-red-500 transition duration-150 ease-out cursor-pointer"
             />
-            
+
           </div>
           <div style={{ width: "calc(100% - 2.5rem)" }} className="pl-4 border-l-2 border-gray-300">
             <div
               onInput={(e) =>
                 setEditableContent({
                   ...editableContent,
-                  title: e.currentTarget.textContent,
+                  tittleBody: e.currentTarget.textContent,
                 })
               }
               className="border-0 focus:outline-none w-full text-gray-800 font-semibold text-3xl mb-3 cursor-text"
@@ -70,7 +68,7 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
               data-placeholder="Title"
               suppressContentEditableWarning={true}
             >
-              {item.title}
+              {item.tittleBody.replace("<h2>", "").replace("</h2>", "")}
             </div>
             <div
               onInput={(e) =>
@@ -84,11 +82,11 @@ export default function EditablePost({ item, setBodyContent, insertBodyContent }
               data-placeholder="Tell your story here..."
               suppressContentEditableWarning={true}
             >
-              {item.content}
+              {item.content.replace("<p>", "").replace("</p>", "")}
             </div>
             <div>
-              {!!editableContent.image ? (
-                <div className="mt-3">{parse(editableContent.image)}</div>
+              {!!editableContent.imageBody ? (
+                <div className="mt-3">{parse(editableContent.imageBody)}</div>
               ) : (
                 <>
                   <input

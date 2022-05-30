@@ -13,18 +13,13 @@ const menuItemList = [
   },
   {
     MenuIcon: PlusIcon,
-    title: "Create Post",
-    pathName: "/createpost",
-  },
-  {
-    MenuIcon: PlusIcon,
     title: "Publish",
     pathName: "/publish",
   },
 ];
 
 function SideBar(props) {
-  const {pathname} = useLocation();
+  const { pathname } = useLocation();
   const [positionActive, setPositionActive] = useState(0);
 
   useEffect(() => {
@@ -34,7 +29,7 @@ function SideBar(props) {
   }, [pathname])
 
   return (
-    <div className="fixed z-30 top-0 w-1/5 min-h-full border-r border-gray-300 shadow-md py-2">
+    <div className="fixed z-30 top-0 w-1/5 max-w-1/5 min-h-full border-r border-gray-300 shadow-md py-2">
       <Link to="/">
         <div className="p-4 border-b-4 border-gray-50 shadow-sm mb-3">
           <img className="h-11" src={logo} alt="logo" />
